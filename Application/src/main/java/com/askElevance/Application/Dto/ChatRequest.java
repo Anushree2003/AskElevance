@@ -1,5 +1,14 @@
 package com.askElevance.Application.Dto;
 
-public class ChatRequest {
 
+
+import lombok.Data;
+
+@Data
+public class ChatRequest {
+	
+	
+    private Long userId;
+    private String message;
 }
+
