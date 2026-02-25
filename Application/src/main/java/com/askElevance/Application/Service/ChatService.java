@@ -85,6 +85,7 @@ public class ChatService {
 	    session.setCreatedAt(LocalDateTime.now());
 		
 		return chatSessionRepo.save(session);
+		
 	}
 	
 	
