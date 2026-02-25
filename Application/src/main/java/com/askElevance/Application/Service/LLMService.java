@@ -16,13 +16,13 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class LLMService {
 
-    @Value("${watsonx.api-key}")
+//    @Value("${watsonx.api-key}")
     private String apiKey;
 
-    @Value("${watsonx.project-id}")
+//    @Value("${watsonx.project-id}")
     private String projectId;
 
-    @Value("${watsonx.url}")
+//    @Value("${watsonx.url}")
     private String url;
 
     public String callLLM(String prompt) {

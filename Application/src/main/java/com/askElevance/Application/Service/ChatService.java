@@ -8,11 +8,16 @@ import org.springframework.stereotype.Service;
 
 import com.askElevance.Application.Entity.ChatSession;
 import com.askElevance.Application.Entity.Message;
+import com.askElevance.Application.Entity.User;
 import com.askElevance.Application.Repo.ChatSessionRepo;
 import com.askElevance.Application.Repo.MessageRepo;
+import com.askElevance.Application.Repo.UserRepo;
 
 @Service
 public class ChatService {
+	
+	@Autowired
+	private UserRepo userRepo;
 	
 	@Autowired
 	private ChatSessionRepo chatSessionRepo;
@@ -41,18 +46,18 @@ public class ChatService {
         
         String prompt = buildPrompt(history);
 //
-        String response = llmService.callLLM(prompt);
+//        String response = llmService.callLLM(prompt);
 
         // Save assistant message
         Message aiMsg = new Message();
         aiMsg.setSession(session);
         aiMsg.setSender("ASSISTANT");
-        aiMsg.setContent(response);
+//        aiMsg.setContent(response);
         aiMsg.setTimestamp(LocalDateTime.now());
         messageRepo.save(aiMsg);
 
-        return response;
-//        return prompt;
+//        return response;
+        return prompt;
 	}
 	
 	private String buildPrompt(List<Message> messages) {
@@ -69,6 +74,18 @@ public class ChatService {
 
         return sb.toString();
     }
+
+	public ChatSession createSession(String title) {
+		ChatSession session = new ChatSession();
+		User user = new User();
+		user.setName("Arohi");
+		userRepo.save(user);
+	    session.setUser(user);
+	    session.setTitle(title != null && !title.isBlank() ? title : "New Chat");
+	    session.setCreatedAt(LocalDateTime.now());
+		
+		return chatSessionRepo.save(session);
+	}
 	
 	
 

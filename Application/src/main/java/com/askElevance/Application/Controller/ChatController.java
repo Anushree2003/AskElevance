@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.askElevance.Application.Dto.ChatRequest;
+import com.askElevance.Application.Entity.ChatSession;
 import com.askElevance.Application.Service.ChatService;
 
 
@@ -28,6 +29,16 @@ public class ChatController {
         );
 
         return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/create")
+    public ResponseEntity<?> createSession(
+            @RequestBody String title
+           ) {
+
+        ChatSession session = chatService.createSession(title);
+
+        return ResponseEntity.ok(session);
     }
     
     @GetMapping("/check")
