@@ -8,4 +8,6 @@ import com.askElevance.Application.Entity.User;
 @EnableJpaRepositories
 public interface UserRepo extends JpaRepository<User, Long> {
 	User findByIdIgnoreCase(Long id);
+	
+	User findByEmail(String email);
 }
