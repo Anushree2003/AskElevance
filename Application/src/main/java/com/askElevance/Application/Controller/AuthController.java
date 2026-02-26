@@ -47,6 +47,4 @@ public class AuthController {
 	    public String check() {
 	        return "Auth Working";
 	    }
-	
-
 }
