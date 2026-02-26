@@ -46,18 +46,18 @@ public class ChatService {
         
         String prompt = buildPrompt(history);
 //
-//        String response = llmService.callLLM(prompt);
+        String response = llmService.callLLM(prompt);
 
         // Save assistant message
         Message aiMsg = new Message();
         aiMsg.setSession(session);
         aiMsg.setSender("ASSISTANT");
-//        aiMsg.setContent(response);
+        aiMsg.setContent(response);
         aiMsg.setTimestamp(LocalDateTime.now());
         messageRepo.save(aiMsg);
 
-//        return response;
-        return prompt;
+        return response;
+//        return prompt;
 	}
 	
 	private String buildPrompt(List<Message> messages) {
