@@ -75,19 +75,46 @@ public class ChatService {
         return sb.toString();
     }
 
-	public ChatSession createSession(String title) {
-		ChatSession session = new ChatSession();
-		User user = new User();
-		user.setName("Arohi");
-		userRepo.save(user);
+	public ChatSession createSession(String title,String userEmail) {
+		
+
+	    // Fetch the logged-in user from DB
+	    User user = userRepo.findByEmail(userEmail);
+	    if (user == null) {
+	        throw new RuntimeException("User not found with email: " + userEmail);
+	    }
+
+	    // Create the chat session
+	    ChatSession session = new ChatSession();
 	    session.setUser(user);
 	    session.setTitle(title != null && !title.isBlank() ? title : "New Chat");
 	    session.setCreatedAt(LocalDateTime.now());
 		
 		return chatSessionRepo.save(session);
-		
+		 
 	}
 	
+	public List<ChatSession> getUserSessions(String userEmail) {
+
+		
+		 // Fetch the logged-in user from DB
+	    User user = userRepo.findByEmail(userEmail);
+	    if (user == null) {
+	        throw new RuntimeException("User not found with email: " + userEmail);
+	    }
+
+	    return chatSessionRepo.findByUserOrderByCreatedAtDesc(user);
+	}
+
+	
+	public List<Message> getSessionMessages(Long sessionId) {
+		
+	    ChatSession session = chatSessionRepo.findById(sessionId)
+	            .orElseThrow(() -> new RuntimeException("Session not found"));
+
+	   
+	    return messageRepo.findBySessionOrderByTimestampAsc(session);
+	}
 	
 
 }

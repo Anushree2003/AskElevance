@@ -51,9 +51,9 @@ public class ChatSession {
 
 		private String title;
 
-	    @ManyToOne
-	    @JoinColumn(name = "user_id")
-	    private User user;
+		@ManyToOne(optional = false)
+		@JoinColumn(name = "user_id", nullable = false)
+		private User user;
 
 	    private LocalDateTime createdAt;
 

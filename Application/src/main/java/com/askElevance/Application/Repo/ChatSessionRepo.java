@@ -9,4 +9,6 @@ import com.askElevance.Application.Entity.User;
 
 public interface ChatSessionRepo extends JpaRepository<ChatSession, Long>{
 	List<ChatSession> findByUser(User user);
+	
+	List<ChatSession>findByUserOrderByCreatedAtDesc(User user);
 }
