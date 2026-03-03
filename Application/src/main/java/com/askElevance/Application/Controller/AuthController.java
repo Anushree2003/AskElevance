@@ -15,7 +15,7 @@ import com.askElevance.Application.Service.AuthService;
 
 @RestController
 @RequestMapping("/auth")
-
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 	 @Autowired
 	    private AuthService authService;

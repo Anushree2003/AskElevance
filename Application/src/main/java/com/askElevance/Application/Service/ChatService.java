@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.askElevance.Application.Dto.MessageDto;
+import com.askElevance.Application.Dto.SessionTitleDto;
 import com.askElevance.Application.Entity.ChatSession;
 import com.askElevance.Application.Entity.Message;
 import com.askElevance.Application.Entity.User;
@@ -94,7 +96,7 @@ public class ChatService {
 		 
 	}
 	
-	public List<ChatSession> getUserSessions(String userEmail) {
+	public List<SessionTitleDto> getUserSessions(String userEmail) {
 
 		
 		 // Fetch the logged-in user from DB
@@ -103,17 +105,27 @@ public class ChatService {
 	        throw new RuntimeException("User not found with email: " + userEmail);
 	    }
 
-	    return chatSessionRepo.findByUserOrderByCreatedAtDesc(user);
+	   return chatSessionRepo.findByUserOrderByCreatedAtDesc(user).stream()
+	            .map(session -> new SessionTitleDto(
+	                    session.getTitle())
+	            )
+	            .toList();
 	}
 
 	
-	public List<Message> getSessionMessages(Long sessionId) {
+	public List<MessageDto> getSessionMessages(Long sessionId) {
 		
 	    ChatSession session = chatSessionRepo.findById(sessionId)
 	            .orElseThrow(() -> new RuntimeException("Session not found"));
 
 	   
-	    return messageRepo.findBySessionOrderByTimestampAsc(session);
+	    return messageRepo.findBySessionOrderByTimestampAsc(session)
+	            .stream()
+	            .map(message -> new MessageDto(
+	                    message.getContent(),
+	                    message.getSender()
+	            ))
+	            .toList();
 	}
 	
 
