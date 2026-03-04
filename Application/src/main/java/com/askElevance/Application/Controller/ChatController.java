@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.askElevance.Application.Dto.ChatRequest;
@@ -25,7 +26,12 @@ import com.askElevance.Application.Service.ChatService;
 
 @RestController
 @RequestMapping("/chat")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(
+	    origins = "http://localhost:5173",  // frontend URL
+	    allowCredentials = "true",          // needed because you send Authorization headers
+	    allowedHeaders = "*",               // allow all headers (including Authorization)
+	    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS} // allow these methods
+	)
 public class ChatController {
 
     @Autowired
@@ -69,10 +75,10 @@ public class ChatController {
     
     @GetMapping("/messages/{sessionId}")
     public ResponseEntity<List<MessageDto>> getSessionMessages(
-            @PathVariable Long sessionId) {
+            @PathVariable Long sessionId) { 
   
         return ResponseEntity.ok(
                 chatService.getSessionMessages(sessionId)
-        );
+        ); 
     }
 }
