@@ -96,7 +96,7 @@ public class ChatService {
 		 
 	}
 	
-	public List<SessionTitleDto> getUserSessions(String userEmail) {
+	public List<ChatSession> getUserSessions(String userEmail) {
 
 		
 		 // Fetch the logged-in user from DB
@@ -105,11 +105,7 @@ public class ChatService {
 	        throw new RuntimeException("User not found with email: " + userEmail);
 	    }
 
-	   return chatSessionRepo.findByUserOrderByCreatedAtDesc(user).stream()
-	            .map(session -> new SessionTitleDto(
-	                    session.getTitle())
-	            )
-	            .toList();
+	   return chatSessionRepo.findByUserOrderByCreatedAtDesc(user);
 	}
 
 	

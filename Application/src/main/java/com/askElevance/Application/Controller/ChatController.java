@@ -65,7 +65,7 @@ public class ChatController {
     }
     
     @GetMapping("/sessions")
-    public ResponseEntity<List<SessionTitleDto>> getUserSessions(
+    public ResponseEntity<List<ChatSession>> getUserSessions(
     		Principal principal) {
     	
     	String email = principal.getName();
