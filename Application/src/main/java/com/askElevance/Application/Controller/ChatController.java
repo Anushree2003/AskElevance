@@ -3,13 +3,16 @@ package com.askElevance.Application.Controller;
 import java.security.Principal;
 import java.util.List;
 
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -80,5 +83,18 @@ public class ChatController {
         return ResponseEntity.ok(
                 chatService.getSessionMessages(sessionId)
         ); 
+    }
+    
+    @DeleteMapping("/sessions/{sessionId}")
+    	public ResponseEntity<?> deleteSession(@PathVariable  Long sessionId){
+    		return ResponseEntity.ok(chatService.deleteSession(sessionId));
+    	}
+    
+    @PutMapping("/sessions/{sessionId}/title")
+    public ResponseEntity<?> updateSessionTitle(
+            @PathVariable Long sessionId,
+            @RequestBody SessionTitleDto sessionTitle) {
+
+        return ResponseEntity.ok(chatService.updateSessionTitle(sessionId, sessionTitle.getTitle()));
     }
 }

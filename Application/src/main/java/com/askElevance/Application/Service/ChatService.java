@@ -3,6 +3,7 @@ package com.askElevance.Application.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -123,6 +124,24 @@ public class ChatService {
 	            ))
 	            .toList();
 	}
-	
+
+	public String deleteSession(Long sessionId) {
+		  if (!chatSessionRepo.existsById(sessionId)) {
+	            throw new RuntimeException("Session not found with id: " + sessionId);
+	        }
+  
+	        chatSessionRepo.deleteById(sessionId);
+	        return "Session deleted successfully";
+	}
+
+	public ChatSession updateSessionTitle(Long sessionId, String title) {
+
+	    ChatSession session = chatSessionRepo.findById(sessionId)
+	            .orElseThrow(() -> new RuntimeException("Session not found"));
+
+	    session.setTitle(title);
+
+	    return chatSessionRepo.save(session);
+	}
 
 }
