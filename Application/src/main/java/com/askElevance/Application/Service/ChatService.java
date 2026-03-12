@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import com.askElevance.Application.Dto.MessageDto;
 import com.askElevance.Application.Dto.SessionTitleDto;
 import com.askElevance.Application.Entity.ChatSession;
+import com.askElevance.Application.Entity.KnowledgeBase;
 import com.askElevance.Application.Entity.Message;
 import com.askElevance.Application.Entity.User;
 import com.askElevance.Application.Repo.ChatSessionRepo;
+import com.askElevance.Application.Repo.KnowledgeBaseRepo;
 import com.askElevance.Application.Repo.MessageRepo;
 import com.askElevance.Application.Repo.UserRepo;
 
@@ -30,53 +32,73 @@ public class ChatService {
 	
 	@Autowired
 	private LLMService llmService;
+	
+
+	
+	@Autowired
+	private KnowledgeBaseService knowledgeBaseService; 
 
 	public String sendMessage(Long sessionId, String message) {
-	
-		ChatSession session = chatSessionRepo.findById(sessionId).orElseThrow();
 
-        // Save user message
-        Message userMsg = new Message();
-        userMsg.setSession(session);
-        userMsg.setSender("USER");
-        userMsg.setContent(message);
-        userMsg.setTimestamp(LocalDateTime.now());
-        messageRepo.save(userMsg);
+	    ChatSession session = chatSessionRepo.findById(sessionId)
+	            .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        // Get history
-        List<Message> history =
-                messageRepo.findBySessionOrderByTimestampAsc(session);
-        
-        String prompt = buildPrompt(history);
-//
-        String response = llmService.callLLM(prompt);
+	    // Save user message
+	    Message userMsg = new Message();
+	    userMsg.setSession(session);
+	    userMsg.setSender("USER");
+	    userMsg.setContent(message);
+	    userMsg.setTimestamp(LocalDateTime.now());
+	    messageRepo.save(userMsg);
 
-        // Save assistant message
-        Message aiMsg = new Message();
-        aiMsg.setSession(session);
-        aiMsg.setSender("ASSISTANT");
-        aiMsg.setContent(response);
-        aiMsg.setTimestamp(LocalDateTime.now());
-        messageRepo.save(aiMsg);
+	    KnowledgeBase kb = knowledgeBaseService.findCategory(message);
 
-        return response;
-//        return prompt;
+	    String finalResponse;
+
+	    if (kb != null) {
+
+	        // Build LLM prompt with ONLY category
+	        String prompt = buildPrompt(message, kb);
+	        String llmAnswer = llmService.callLLM(prompt);
+
+	        // Prepend a short intro to explain the output
+	        String intro = "Here is the information you requested regarding " + kb.getCategory() + ":\n\n";
+
+	        // Combine: Intro + LLM answer + Static response
+	        finalResponse = intro + llmAnswer + "\n\nOfficial Note:\n" + kb.getResponse();
+
+	    } else {
+	        finalResponse = "This query is outside the assistant knowledge base. Please contact your Manager or HR.";
+	    }
+
+	    // Save assistant message
+	    Message aiMsg = new Message();
+	    aiMsg.setSession(session);
+	    aiMsg.setSender("ASSISTANT");
+	    aiMsg.setContent(finalResponse);
+	    aiMsg.setTimestamp(LocalDateTime.now());
+	    messageRepo.save(aiMsg);
+  
+	    return finalResponse;
 	}
 	
-	private String buildPrompt(List<Message> messages) {
+	
+	
+	private String buildPrompt(String question, KnowledgeBase kb) {
+	    return """
+	You are an internal company assistant.
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("You are an onboarding assistant for Elevance and IBM.\n");
+	Category: %s
 
-        for (Message m : messages) {
-            sb.append(m.getSender())
-              .append(": ")
-              .append(m.getContent())
-              .append("\n");
-        }
+	User Question: %s
 
-        return sb.toString();
-    }
+	Instructions:
+	- Start your response with a friendly, easy-to-understand introduction summarizing what the user is asking.
+	- I have the reponse stored in databsae and will be returning along with your reply so, provide only the context 
+	  like after your reply our reponse will be printed.
+	- Keep the tone professional and helpful.
+	""".formatted(kb.getCategory(), question);
+	}
 
 	public ChatSession createSession(String title,String userEmail) {
 		

@@ -61,9 +61,13 @@ public class AuthService {
 	                    request.getPassword()
 	                )
 	            );
-
+	         User user=userRepository.findByEmail(request.getEmail());
 	            String token = jwtUtil.generateToken((UserDetails) auth.getPrincipal());
-	            return new AuthResponse(token);
+	            return new AuthResponse(
+	                    token,
+	                   user.getName(),
+	                   user.getRole()
+	            );
 
 	        } catch (Exception e) {
 	            e.printStackTrace();  
