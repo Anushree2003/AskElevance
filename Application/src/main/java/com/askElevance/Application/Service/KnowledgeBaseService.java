@@ -23,6 +23,8 @@ public class KnowledgeBaseService {
 	    question = question.toLowerCase();
 
 	    for (KnowledgeBase kb : list) {
+	    	
+	    	if(kb.getKeywords() == null) continue;
 
 	        String[] keys = kb.getKeywords().toLowerCase().split(",");
 

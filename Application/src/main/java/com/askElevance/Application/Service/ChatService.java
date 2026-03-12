@@ -57,17 +57,32 @@ public class ChatService {
 
 	    if (kb != null) {
 
-	        // Build LLM prompt with ONLY category
 	        String prompt = buildPrompt(message, kb);
 	        String llmAnswer = llmService.callLLM(prompt);
 
-	        // Prepend a short intro to explain the output
-	        String intro = "Here is the information you requested regarding " + kb.getCategory() + ":\n\n";
+	        String intro = "Here is the information regarding " + kb.getCategory() + ":\n\n";
 
-	        // Combine: Intro + LLM answer + Static response
-	        finalResponse = intro + llmAnswer + "\n\nOfficial Note:\n" + kb.getResponse();
+	        String storedResponse = kb.getResponse();	
 
-	    } else {
+	        // Check if stored response contains a link
+	        boolean containsLink = storedResponse.contains("http://") || storedResponse.contains("https://");
+
+	        if (containsLink) {
+
+	            finalResponse = intro
+	                    + llmAnswer
+	                    + "\n\nYou can find more details here:\n"
+	                    + storedResponse;
+
+	        } else {
+
+	            finalResponse = intro
+	                    + llmAnswer
+	                    + "\n\nHere's the information you requested\n"
+	                    + storedResponse;
+	        }
+	    }
+	    else {
 	        finalResponse = "This query is outside the assistant knowledge base. Please contact your Manager or HR.";
 	    }
 
