@@ -83,6 +83,13 @@ public class ChatService {
 	        }
 	    }
 	    else {
+
+	        try {
+	            Thread.sleep(3000); 
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt();
+	        }
+
 	        finalResponse = "This query is outside the assistant knowledge base. Please contact your Manager or HR.";
 	    }
 
